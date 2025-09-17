@@ -2,21 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>My GitLab Page</title>
+  <title>Simple Click Game</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+    #box {
+      width: 100px;
+      height: 100px;
+      background-color: red;
+      position: absolute;
+      top: 100px;
+      left: 100px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h1>Hello from GitLab!</h1>
-  <p>This is a simple HTML page hosted on <b>GitLab Pages</b>.</p>
+  <h1>Click the Box Game 🎮</h1>
+  <p>Click the red box to score points!</p>
+  <h2>Score: <span id="score">0</span></h2>
 
-  <h2>Navigation</h2>
-  <ul>
-    <li><a href="#">Home</a></li>
-    <li><a href="#">About</a></li>
-    <li><a href="#">Contact</a></li>
-  </ul>
+  <div id="box"></div>
 
-  <footer>
-    <p>© 2025 My GitLab Page</p>
-  </footer>
+  <script>
+    let score = 0;
+    const box = document.getElementById("box");
+    const scoreDisplay = document.getElementById("score");
+
+    box.addEventListener("click", () => {
+      score++;
+      scoreDisplay.textContent = score;
+      moveBox();
+    });
+
+    function moveBox() {
+      const x = Math.random() * (window.innerWidth - 100);
+      const y = Math.random() * (window.innerHeight - 100);
+      box.style.left = x + "px";
+      box.style.top = y + "px";
+    }
+  </script>
 </body>
 </html>
