@@ -2,47 +2,89 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Simple Click Game</title>
+  <title>Catch the Ball Game</title>
   <style>
-    body {
-      text-align: center;
-      font-family: Arial, sans-serif;
-    }
-    #box {
-      width: 100px;
-      height: 100px;
-      background-color: red;
-      position: absolute;
-      top: 100px;
-      left: 100px;
-      cursor: pointer;
-    }
+    body { margin: 0; overflow: hidden; }
+    canvas { background: lightblue; display: block; margin: 0 auto; }
   </style>
 </head>
 <body>
-  <h1>Click the Box Game 🎮</h1>
-  <p>Click the red box to score points!</p>
-  <h2>Score: <span id="score">0</span></h2>
-
-  <div id="box"></div>
-
+  <canvas id="gameCanvas" width="400" height="500"></canvas>
+  
   <script>
-    let score = 0;
-    const box = document.getElementById("box");
-    const scoreDisplay = document.getElementById("score");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
 
-    box.addEventListener("click", () => {
-      score++;
-      scoreDisplay.textContent = score;
-      moveBox();
+    let paddle = { x: 150, y: 470, width: 100, height: 15, speed: 20 };
+    let ball = { x: Math.random() * 380, y: 0, radius: 10, speed: 3 };
+    let score = 0;
+
+    // Draw paddle
+    function drawPaddle() {
+      ctx.fillStyle = "darkblue";
+      ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+    }
+
+    // Draw ball
+    function drawBall() {
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+      ctx.fillStyle = "red";
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    // Move ball
+    function moveBall() {
+      ball.y += ball.speed;
+      if (ball.y > canvas.height) {
+        ball.y = 0;
+        ball.x = Math.random() * (canvas.width - ball.radius * 2);
+        score--; // lose point if missed
+      }
+    }
+
+    // Check collision
+    function checkCollision() {
+      if (
+        ball.y + ball.radius >= paddle.y &&
+        ball.x >= paddle.x &&
+        ball.x <= paddle.x + paddle.width
+      ) {
+        score++;
+        ball.y = 0;
+        ball.x = Math.random() * (canvas.width - ball.radius * 2);
+      }
+    }
+
+    // Draw score
+    function drawScore() {
+      ctx.font = "20px Arial";
+      ctx.fillStyle = "black";
+      ctx.fillText("Score: " + score, 10, 20);
+    }
+
+    // Game loop
+    function gameLoop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawPaddle();
+      drawBall();
+      moveBall();
+      checkCollision();
+      drawScore();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Control paddle with arrow keys
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" && paddle.x > 0) {
+        paddle.x -= paddle.speed;
+      } else if (e.key === "ArrowRight" && paddle.x < canvas.width - paddle.width) {
+        paddle.x += paddle.speed;
+      }
     });
 
-    function moveBox() {
-      const x = Math.random() * (window.innerWidth - 100);
-      const y = Math.random() * (window.innerHeight - 100);
-      box.style.left = x + "px";
-      box.style.top = y + "px";
-    }
+    gameLoop();
   </script>
 </body>
 </html>
